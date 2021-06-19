@@ -1,0 +1,42 @@
+# enable ES6
+parser: "babel-eslint"
+parserOptions:
+  ecmaVersion: 6
+  sourceType: "module"
+  allowImportExportEverywhere: true
+
+# register plugins
+plugins:
+  - meteor
+  - i18next
+
+# use the rules of eslint-config-airbnb
+# and the recommended rules of eslint-plugin-meteor
+extends:
+  - airbnb-base
+  - plugin:meteor/recommended
+  - plugin:you-dont-need-lodash-underscore/compatible
+
+# registerenvironments
+env:
+  meteor: true
+  browser: true
+  node: true
+
+settings:
+  import/resolver: "meteor"
+
+rules:
+  # overwrite some rules (avoid semicolons)
+  semi: [2, 'never']
+  no-unexpected-multiline: 2
+  no-underscore-dangle: [0, { allow: ['_id']}]
+  no-throw-literal: 0
+  new-cap: 1
+  object-shorthand: 1
+  import/no-extraneous-dependencies: 0
+  import/no-unresolved: [2, { ignore: ['^meteor'] }]
+  no-console: [2, { allow: ['warn', 'error'] }]
+  no-restricted-syntax: [2, 'DebuggerStatement', 'LabeledStatement', 'WithStatement']
+  i18next/no-literal-string: [1, { "ignoreCallee": ["$","get","set","add","added","changed","children","html","prop","call","on","is","tab","addClass","removeClass","toggle","querySelector","querySelectorAll","go","remove","getParam","getQueryParam","moment","format","subscribe","publish","setParams","setQueryParams","startOf","endOf","Collection","subtract","find","data"] }] 
+  import/extensions: 0

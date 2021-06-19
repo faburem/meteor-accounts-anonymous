@@ -1,23 +1,23 @@
-"use strict";
-/* globals AccountsAnonymous */
+import { Accounts } from 'meteor/accounts-base'
+import AccountsAnonymous from './accounts-anonymous.js'
 
-AccountsAnonymous.login = function (callback) {
-  callback = callback || function () {};
+AccountsAnonymous.login = (callback) => {
+  callback = callback || (() => {})
   if (Meteor.userId()) {
     callback(new Meteor.Error(AccountsAnonymous._ALREADY_LOGGED_IN_ERROR,
-      "You can't login anonymously while you are already logged in."));
-    return;
+      "You can't login anonymously while you are already logged in."))
+    return
   }
   Accounts.callLoginMethod({
     methodArguments: [{
-      anonymous: true
+      anonymous: true,
     }],
-    userCallback: function (error) {
+    userCallback(error) {
       if (error) {
-        if (callback) { callback(error); }
-      } else {
-        if (callback) { callback(); }
-      }
-    }
-  });
-};
+        if (callback) { callback(error) }
+      } else if (callback) { callback() }
+    },
+  })
+}
+
+export { AccountsAnonymous }

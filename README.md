@@ -1,22 +1,22 @@
-# brettle:accounts-anonymous
-
-[![Build Status](https://travis-ci.org/brettle/meteor-accounts-anonymous.svg?branch=master)](https://travis-ci.org/brettle/meteor-accounts-anonymous)
-
+# faburem:accounts-anonymous
 Allow users to login anonymously (i.e. no username, email, password, or OAuth
 service like accounts-google)
 
-This package is part of the `brettle:accounts-*` suite of packages. See
-[`brettle:accounts-deluxe`](https://atmospherejs.com/brettle/accounts-deluxe)
-for an overview of the suite and a live demo.
+This is an opinionated fork of the brettle:accounts-anonymous package - it includes the add-service package out-of-the-box.
+Besides including the add-service package, the code has been modernized and unneeded dependencies have been dropped (🪦 underscore).
+
+Migrating from brettle:accounts-anoymous should be pretty straight forward, with only minor modifications needed to account for the move to modern ecmascript and modules.
+This implies the minimal version of Meteor required to use this package is 1.2.
 
 ## Features
 - Supports truly anonymous users
 - Does not require accounts-password
 - Fires server event when an anonymous user logs in as a different user
-
+- Includes the add-service package to create permanent users e.g. using accounts-password to migrate anoymous to registered users easily
+- Modern code and zero dependencies (besides Meteor's accounts-base)
 ## Installation
 ```sh
-meteor add brettle:accounts-anonymous
+meteor add faburem:accounts-anonymous
 ```
 
 ## Usage
@@ -31,6 +31,11 @@ as the same anonymous user as long as the token exists (i.e. the user hasn't
 logged out or logged in as some other user), and hasn't
 [expired](http://docs.meteor.com/#/full/accounts_config).
 
+On the server, make sure to import the AccountsAnonymous package and initialize it.
+`
+import { AccountsAnonymous } from 'meteor/faburem:accounts-anonymous'
+AccountsAnoymous.init()
+`
 On the server, call `AccountsAnonymous.onAbandoned(func)` to register a callback
 to call if an anonymous user logs in as a different user. When this occurs,
 Meteor replaces the anonymous user's token with the new user's token, so there
@@ -38,14 +43,25 @@ will be no way to log in again as the anonymous user. The `func` callback takes
 the anonymous user as its sole argument. You might use the call back  to clean
 up any data associated with the user.
 
+## Migrating from brettle:accounts-anonymous
+No changes should be needed on the client side other than changing the import from `brettle:accounts-anonymous` to `faburem:accounts-anonymous`.
+
+### Breaking changes (server side)
+If you have been using `brettle:accounts-anonymous` before you probably did not need any import on the server side because that has been handled automatically for you using side effects.
+This has been changed to comply with modern JavaScript and thus you have to implicitly import and initialize the server side part of the package like so:
+
+`
+import { AccountsAnonymous } from 'meteor/faburem:accounts-anonymous'
+AccountsAnoymous.init()
+`
+
+## Design and Usecase
+This package can be used to support registration-free one-click on-boarding for your app. Let users explore all the features and if they like it they can opt-in to create a full account (e.g. username/email/password) later on.
+An example of this usecase in action can be seen at [titra.io](https://titra.io). Specifically, there is a dedicated /try route which creates an anonymous user account. New users can explore the app and complete their profile whenever they feel ready to do so - or abandon it later on.
+
 ## History and Acknowledgements
 
-This is a friendly hard fork of the great
-[artwells:accounts-guest](https://github.com/artwells/meteor-accounts-guest)
-package. Before the fork, I [contributed
-code](https://github.com/artwells/meteor-accounts-guest/pull/35) which added
-support for using artwells:accounts-guest without accounts-password. I'm forking
-now because I'm not interested in the password-based guests which that package
-uses and I'd also like to split out some of the features into separate packages.
-I don't see any way to make these changes to artwells:accounts-guest without
-breaking compatibility for existing users of that package. Thus the hard fork.
+This is a friendly fork of the great
+[brettle:accounts-anonymous](https://github.com/brettle/meteor-accounts-anonymous)
+package. The Meteor release 2.3 requires some changes to packages which are based 
+on accounts-base and since the original package is not maintained anymore this friendly fork has been created!
