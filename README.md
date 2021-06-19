@@ -32,10 +32,10 @@ logged out or logged in as some other user), and hasn't
 [expired](http://docs.meteor.com/#/full/accounts_config).
 
 On the server, make sure to import the AccountsAnonymous package and initialize it.
-`
+```javascript
 import { AccountsAnonymous } from 'meteor/faburem:accounts-anonymous'
 AccountsAnoymous.init()
-`
+```
 On the server, call `AccountsAnonymous.onAbandoned(func)` to register a callback
 to call if an anonymous user logs in as a different user. When this occurs,
 Meteor replaces the anonymous user's token with the new user's token, so there
@@ -46,14 +46,14 @@ up any data associated with the user.
 ## Migrating from brettle:accounts-anonymous
 No changes should be needed on the client side other than changing the import from `brettle:accounts-anonymous` to `faburem:accounts-anonymous`.
 
-### Breaking changes (server side)
+### Breaking Changes (server side)
 If you have been using `brettle:accounts-anonymous` before you probably did not need any import on the server side because that has been handled automatically for you using side effects.
 This has been changed to comply with modern JavaScript and thus you have to implicitly import and initialize the server side part of the package like so:
 
-`
+```javascript
 import { AccountsAnonymous } from 'meteor/faburem:accounts-anonymous'
 AccountsAnoymous.init()
-`
+```
 
 ## Design and Usecase
 This package can be used to support registration-free one-click on-boarding for your app. Let users explore all the features and if they like it they can opt-in to create a full account (e.g. username/email/password) later on.
