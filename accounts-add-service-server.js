@@ -22,13 +22,13 @@ AccountsAddService._migrateDatabase = () => {
   if (!AccountsAddService.databaseMigrationEnabled) {
     return false
   }
-  const addHasLoggedIn = AccountsAddService._migrationControl.findOne('addHasLoggedIn')
+  const addHasLoggedIn = Promise.await(AccountsAddService._migrationControl.findOneAsync('addHasLoggedIn'))
   if (addHasLoggedIn && addHasLoggedIn.startedAt) {
     return false
   }
   if (!addHasLoggedIn) {
     try {
-      AccountsAddService._migrationControl.insert({ _id: 'addHasLoggedIn' })
+      Promise.await(AccountsAddService._migrationControl.insertAsync({ _id: 'addHasLoggedIn' }))
     } catch (err) {
       // Ignore duplicate key error thrown if already id already exists due to
       // concurrent insertion attempts
@@ -37,14 +37,14 @@ AccountsAddService._migrateDatabase = () => {
       }
     }
   }
-  const numAffected = AccountsAddService._migrationControl.update({
+  const numAffected = Promise.await(AccountsAddService._migrationControl.updateAsync({
     _id: 'addHasLoggedIn',
     startedAt: { $exists: false },
   }, {
     $set: {
       startedAt: new Date(),
     },
-  })
+  }))
   // Only one server will return numAffected !== 0. When numAffect === 0,
   // The migration was already started (and possibly finished)
   if (numAffected === 0) {
@@ -55,20 +55,20 @@ AccountsAddService._migrateDatabase = () => {
     hasLoggedIn: { $exists: false },
     'services.resume': { $exists: true },
   }
-  const numUsersUpdated = Meteor.users.update(selector, {
+  const numUsersUpdated = Promise.await(Meteor.users.updateAsync(selector, {
     $set: { hasLoggedIn: true },
-  })
+  }))
   if (numUsersUpdated > 0) {
     console.log(`faburem:accounts-add-service set hasLoggedIn = true for ${
       numUsersUpdated} existing user(s).`)
   }
-  AccountsAddService._migrationControl.update({
+  Promise.await(AccountsAddService._migrationControl.updateAsync({
     _id: 'addHasLoggedIn',
   }, {
     $set: {
       finishedAt: new Date(),
     },
-  })
+  }))
   return numUsersUpdated
 }
 
@@ -78,9 +78,9 @@ Meteor.startup(AccountsAddService._migrateDatabase)
 // we don't accidentally merge his account if his "resume" service is removed.
 Accounts.onLogin((attemptInfo) => {
   if (attemptInfo.user && !attemptInfo.user.hasLoggedIn) {
-    Meteor.users.update(attemptInfo.user._id, {
+    Promise.await(Meteor.users.updateAsync(attemptInfo.user._id, {
       $set: { hasLoggedIn: true },
-    })
+    }))
   }
 })
 
@@ -124,7 +124,7 @@ const addServiceCallbackSet = {
       repinCredentials(serviceData, failedAttempt.user._id, attemptingUser._id)
     }
 
-    Meteor.users.remove(failedAttempt.user._id)
+    Promise.await(Meteor.users.removeAsync(failedAttempt.user._id))
 
     // Copy the serviceData into Meteor.user.services[serviceName]
     const setAttrs = {}
@@ -190,9 +190,9 @@ const addServiceCallbackSet = {
       setAttrs[key] = value
     })
 
-    Meteor.users.update(attemptingUser._id, {
+    Promise.await(Meteor.users.updateAsync(attemptingUser._id, {
       $set: setAttrs,
-    })
+    }))
   },
 }
 AccountsAddService._init = () => {

@@ -1,12 +1,12 @@
 Package.describe({
   summary: 'Support anonymous logins',
-  version: '0.4.0',
+  version: '0.5.0',
   name: 'faburem:accounts-anonymous',
   git: 'https://github.com/faburem/meteor-accounts-anonymous.git',
 })
 
 Package.onUse((api) => {
-  api.versionsFrom(['1.2', '2.3'])
+  api.versionsFrom('2.16')
   api.use(['accounts-base'], 'client')
   api.use(['accounts-base', 'callback-hook'], 'server')
   api.use(['ecmascript'], ['client', 'server'])
