@@ -34,7 +34,7 @@ logged out or logged in as some other user), and hasn't
 On the server, make sure to import the AccountsAnonymous package and initialize it.
 ```javascript
 import { AccountsAnonymous } from 'meteor/faburem:accounts-anonymous'
-AccountsAnoymous.init()
+AccountsAnonymous.init()
 ```
 On the server, call `AccountsAnonymous.onAbandoned(func)` to register a callback
 to call if an anonymous user logs in as a different user. When this occurs,
@@ -52,7 +52,7 @@ This has been changed to comply with modern JavaScript and thus you have to impl
 
 ```javascript
 import { AccountsAnonymous } from 'meteor/faburem:accounts-anonymous'
-AccountsAnoymous.init()
+AccountsAnonymous.init()
 ```
 
 ## Design and Usecase
