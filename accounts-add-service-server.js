@@ -1,4 +1,5 @@
 import { Mongo } from 'meteor/mongo'
+import { Promise } from 'meteor/promise'
 import AccountsMultiple from './accounts-multiple-server.js'
 
 const AccountsAddService = {}
@@ -18,17 +19,17 @@ AccountsAddService._migrationControl = new Mongo.Collection('AccountsAddService.
 
 // returns false if the migration isn't run, or the number of users updated
 // if it is.
-AccountsAddService._migrateDatabase = () => {
+AccountsAddService._migrateDatabase = async () => {
   if (!AccountsAddService.databaseMigrationEnabled) {
     return false
   }
-  const addHasLoggedIn = Promise.await(AccountsAddService._migrationControl.findOneAsync('addHasLoggedIn'))
+  const addHasLoggedIn = await AccountsAddService._migrationControl.findOneAsync('addHasLoggedIn')
   if (addHasLoggedIn && addHasLoggedIn.startedAt) {
     return false
   }
   if (!addHasLoggedIn) {
     try {
-      Promise.await(AccountsAddService._migrationControl.insertAsync({ _id: 'addHasLoggedIn' }))
+      await AccountsAddService._migrationControl.insertAsync({ _id: 'addHasLoggedIn' })
     } catch (err) {
       // Ignore duplicate key error thrown if already id already exists due to
       // concurrent insertion attempts
@@ -37,14 +38,14 @@ AccountsAddService._migrateDatabase = () => {
       }
     }
   }
-  const numAffected = Promise.await(AccountsAddService._migrationControl.updateAsync({
+  const numAffected = await AccountsAddService._migrationControl.updateAsync({
     _id: 'addHasLoggedIn',
     startedAt: { $exists: false },
   }, {
     $set: {
       startedAt: new Date(),
     },
-  }))
+  })
   // Only one server will return numAffected !== 0. When numAffect === 0,
   // The migration was already started (and possibly finished)
   if (numAffected === 0) {
@@ -55,20 +56,20 @@ AccountsAddService._migrateDatabase = () => {
     hasLoggedIn: { $exists: false },
     'services.resume': { $exists: true },
   }
-  const numUsersUpdated = Promise.await(Meteor.users.updateAsync(selector, {
+  const numUsersUpdated =  await Meteor.users.updateAsync(selector, {
     $set: { hasLoggedIn: true },
-  }))
+  })
   if (numUsersUpdated > 0) {
     console.log(`faburem:accounts-add-service set hasLoggedIn = true for ${
       numUsersUpdated} existing user(s).`)
   }
-  Promise.await(AccountsAddService._migrationControl.updateAsync({
+  await AccountsAddService._migrationControl.updateAsync({
     _id: 'addHasLoggedIn',
   }, {
     $set: {
       finishedAt: new Date(),
     },
-  }))
+  })
   return numUsersUpdated
 }
 
@@ -76,11 +77,11 @@ Meteor.startup(AccountsAddService._migrateDatabase)
 
 // The first time a user logs in, we set his hasLoggedIn property so that
 // we don't accidentally merge his account if his "resume" service is removed.
-Accounts.onLogin((attemptInfo) => {
+Accounts.onLogin(async (attemptInfo) => {
   if (attemptInfo.user && !attemptInfo.user.hasLoggedIn) {
-    Promise.await(Meteor.users.updateAsync(attemptInfo.user._id, {
+    await Meteor.users.updateAsync(attemptInfo.user._id, {
       $set: { hasLoggedIn: true },
-    }))
+    })
   }
 })
 
@@ -109,7 +110,7 @@ const addServiceCallbackSet = {
     }
     return true
   },
-  onSwitchFailure(attemptingUser, failedAttempt) {
+  async onSwitchFailure(attemptingUser, failedAttempt) {
     if (!failedAttempt.error
       || !failedAttempt.error.error || !failedAttempt.error.reason
       || failedAttempt.error.error !== Accounts.LoginCancelledError.numericError
@@ -124,7 +125,7 @@ const addServiceCallbackSet = {
       repinCredentials(serviceData, failedAttempt.user._id, attemptingUser._id)
     }
 
-    Promise.await(Meteor.users.removeAsync(failedAttempt.user._id))
+    await Meteor.users.removeAsync(failedAttempt.user._id)
 
     // Copy the serviceData into Meteor.user.services[serviceName]
     const setAttrs = {}
@@ -190,9 +191,9 @@ const addServiceCallbackSet = {
       setAttrs[key] = value
     })
 
-    Promise.await(Meteor.users.updateAsync(attemptingUser._id, {
+    await Meteor.users.updateAsync(attemptingUser._id, {
       $set: setAttrs,
-    }))
+    })
   },
 }
 AccountsAddService._init = () => {
