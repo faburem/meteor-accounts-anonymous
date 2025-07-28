@@ -1,5 +1,6 @@
 import { Hook } from 'meteor/callback-hook'
 import { Accounts } from 'meteor/accounts-base'
+import { Promise } from 'meteor/promise'
 import AccountsMultiple from './accounts-multiple-server.js'
 import AccountsAnonymous from './accounts-anonymous.js'
 import AccountsAddService from './accounts-add-service-server.js'
@@ -14,7 +15,7 @@ Accounts.registerLoginHandler('anonymous', (options) => {
     return undefined
   }
 
-  const newUserId = Accounts.insertUserDoc(options, {})
+  const newUserId = Promise.await(Accounts.insertUserDoc(options, {}))
   return {
     userId: newUserId,
   }

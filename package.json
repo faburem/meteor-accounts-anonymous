@@ -1,19 +1,11 @@
 {
-  "name": "accounts-anonymous",
-  "version": "0.4.0",
+  "name": "faburem:accounts-anonymous",
+  "version": "0.5.4",
   "description": "Meteor anonymous accounts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.28.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-import-resolver-meteor": "^0.4.0",
-    "eslint-plugin-i18next": "^5.1.1",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-meteor": "^7.3.0",
-    "eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0"
   },
   "repository": {
     "type": "git",

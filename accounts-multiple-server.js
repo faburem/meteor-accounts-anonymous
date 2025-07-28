@@ -1,4 +1,5 @@
 import { DDP } from 'meteor/ddp-client'
+import { Promise } from 'meteor/promise'
 
 const AccountsMultiple = {
   _stoppers: [],

@@ -1,5 +1,4 @@
 import { Mongo } from 'meteor/mongo'
-import { Promise } from 'meteor/promise'
 import AccountsMultiple from './accounts-multiple-server.js'
 
 const AccountsAddService = {}
