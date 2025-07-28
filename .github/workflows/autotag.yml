@@ -2,25 +2,31 @@ on:
   push:
     branches:
     - master
-name: Docker build
+name: Create release
 jobs:
   release:
-    name: Autotag
+    name: Create a new github release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: checkout
-        uses: actions/checkout@master
-      - name: autotag
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Autotag
         id: autotag
-        uses: butlerlogic/action-autotag@1.0.2
-        with:
+        uses: butlerlogic/action-autotag@1.1.2
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          strategy: package
           tag_message: ${{ github.event.head_commit.message }}
-      - name: create_release
+
+      - name: Create Release
+        if: steps.autotag.outputs.tagname != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: actions/create-release@latest
-        if: success()
         with:
           tag_name: ${{steps.autotag.outputs.tagname}}
           release_name: ${{steps.autotag.outputs.tagname}}
