@@ -1,5 +1,4 @@
 import { DDP } from 'meteor/ddp-client'
-import { Promise } from 'meteor/promise'
 
 const AccountsMultiple = {
   _stoppers: [],
@@ -27,7 +26,7 @@ const AttemptingUser = {
   },
 }
 
-function createValidateLoginAttemptHandler(validateSwitchCallback) {
+async function createValidateLoginAttemptHandler(validateSwitchCallback) {
   return (attempt) => {
     // Don't do anything if the login handler can't even provide a user object
     // or a method name.
@@ -45,7 +44,7 @@ function createValidateLoginAttemptHandler(validateSwitchCallback) {
       if (!attemptingUserId || attempt.user._id === attemptingUserId) {
         return attempt.allowed
       }
-      attemptingUser = Promise.await(Meteor.users.findOneAsync(attemptingUserId))
+      attemptingUser = await(Meteor.users.findOneAsync(attemptingUserId))
     }
 
     // Don't do anything if the logged in user already has credentials on

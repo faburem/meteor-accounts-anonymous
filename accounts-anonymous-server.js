@@ -1,6 +1,5 @@
 import { Hook } from 'meteor/callback-hook'
 import { Accounts } from 'meteor/accounts-base'
-import { Promise } from 'meteor/promise'
 import AccountsMultiple from './accounts-multiple-server.js'
 import AccountsAnonymous from './accounts-anonymous.js'
 import AccountsAddService from './accounts-add-service-server.js'
@@ -10,12 +9,12 @@ function isAnonymous(user) {
   return (user.services && user.services?.length === 1 && user.services.resume)
 }
 
-Accounts.registerLoginHandler('anonymous', (options) => {
+Accounts.registerLoginHandler('anonymous', async (options) => {
   if (!options || !options.anonymous || Meteor.userId()) {
     return undefined
   }
 
-  const newUserId = Promise.await(Accounts.insertUserDoc(options, {}))
+  const newUserId = await(Accounts.insertUserDoc(options, {}))
   return {
     userId: newUserId,
   }
