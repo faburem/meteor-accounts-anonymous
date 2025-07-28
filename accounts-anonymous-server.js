@@ -14,7 +14,7 @@ Accounts.registerLoginHandler('anonymous', async (options) => {
     return undefined
   }
 
-  const newUserId = await(Accounts.insertUserDoc(options, {}))
+  const newUserId = await Accounts.insertUserDoc(options, {})
   return {
     userId: newUserId,
   }

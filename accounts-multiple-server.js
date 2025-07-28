@@ -44,7 +44,7 @@ async function createValidateLoginAttemptHandler(validateSwitchCallback) {
       if (!attemptingUserId || attempt.user._id === attemptingUserId) {
         return attempt.allowed
       }
-      attemptingUser = await(Meteor.users.findOneAsync(attemptingUserId))
+      attemptingUser = await Meteor.users.findOneAsync(attemptingUserId)
     }
 
     // Don't do anything if the logged in user already has credentials on
