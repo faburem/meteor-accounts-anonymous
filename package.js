@@ -1,6 +1,6 @@
 Package.describe({
   summary: 'Support anonymous logins',
-  version: '0.5.7',
+  version: '0.5.8',
   name: 'faburem:accounts-anonymous',
   git: 'https://github.com/faburem/meteor-accounts-anonymous.git',
 })

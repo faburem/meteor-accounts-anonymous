@@ -27,7 +27,7 @@ const AttemptingUser = {
 }
 
 async function createValidateLoginAttemptHandler(validateSwitchCallback) {
-  return (attempt) => {
+  return async (attempt) => {
     // Don't do anything if the login handler can't even provide a user object
     // or a method name.
     if (!attempt.user || !attempt.methodName) {

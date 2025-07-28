@@ -1,6 +1,6 @@
 {
   "name": "faburem:accounts-anonymous",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "Meteor anonymous accounts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
